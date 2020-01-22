@@ -52,7 +52,7 @@ def update_screen(ai_settings, screen, ship, aliens, bullets):
     # 显示最新的屏幕
     pygame.display.flip()
 
-def update_bullets(bullets):
+def update_bullets(aliens, bullets):
     # 更新子弹位置
     bullets.update()
     
@@ -61,6 +61,9 @@ def update_bullets(bullets):
         if bullet.rect.bottom <= 0:
             bullets.remove(bullet)
     # print(len(bullets))
+
+    # 检查子弹是否击中外星人，如果击中，删除外星人和子弹; P248
+    collisions = pygame.sprite.groupcollide(bullets, aliens, True, True) 
 
 # 重构前：
 # def create_fleet(ai_settings, screen, aliens):
@@ -131,11 +134,27 @@ def create_fleet(ai_settings, screen, ship, aliens):
 # 当然在写代码的过程中，还是要尽量避免这种错漏
 # 写完代码后，脑补一下代码是如何运行的，可以帮助理解，可以发现错误；
 
-def update_aliens(aliens):
+
+
+def check_fleet_edges(ai_settings, aliens):
+    # 当外星人到达边缘时，采取措施
+    for alien in aliens.sprites():
+        if alien.check_edges():
+            change_fleet_direction(ai_settings, aliens)
+            break
+
+def change_fleet_direction(ai_settings, aliens):
+    # 将整群外星人下移，并改变运动方向
+    for alien in aliens.sprites():
+        alien.rect.y += ai_settings.fleet_drop_factor
+        # 是加号，不是减号
+    ai_settings.fleet_direction *= -1
+
+def update_aliens(ai_settings, aliens):
     # 更新外星人群的中的外星人位置
+    # 检查是否有外星人位于屏幕边缘，并更新整群外星人的位置
+    check_fleet_edges(ai_settings, aliens)
     aliens.update()
-
-
 
 
     

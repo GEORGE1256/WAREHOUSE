@@ -21,5 +21,6 @@ class Settings():
         self.alien_speed_factor = 1
         # P 244
         self.fleet_drop_factor = 10
-        # 1 = 向右移；-1 = 向左移
+        # 1 = 向右移；-1 = 向左移;表示 2 个意思：移动方向、移动步长；
+        # 如果用Ture OR false, 则无法表示
         self.fleet_direction = 1

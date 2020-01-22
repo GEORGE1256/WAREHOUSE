@@ -1,4 +1,5 @@
 import pygame
+import os
 from pygame.sprite import Sprite
 
 class Alien(Sprite):
@@ -9,7 +10,8 @@ class Alien(Sprite):
         self.ai_settings = ai_settings
 
         # 加载外星人图像，并获取其rect 值
-        self.image = pygame.image.load('images/alien.bmp')
+        # print(os.getcwd()) 结果是python,主文件
+        self.image = pygame.image.load('alien_invasion\images\\alien.bmp')
         self.rect = self.image.get_rect()
 
         # 外星人的初始位置在屏幕左上角附近
@@ -23,10 +25,20 @@ class Alien(Sprite):
     def blitme(self):
         # 在指定位置绘制外星人
         self.screen.blit(self.image, self.rect)
+
+    def check_edges(self):
+        # 外星人位于屏幕边缘，返回True
+        # >=, 之间不能加 空格
+        screen_rect = self.screen.get_rect()
+        if self.rect.right >= screen_rect.right:
+            return True
+        elif self.rect.right <= 0:
+            return True
     
     def update(self):
         # 向右移动外星人
-        self.x += self.ai_settings.alien_speed_factor
+        self.x += (self.ai_settings.alien_speed_factor * 
+                    self.ai_settings.fleet_direction)
         self.rect.x = self.x
 
 
