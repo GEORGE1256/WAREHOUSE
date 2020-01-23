@@ -32,5 +32,8 @@ path.
 3. 报错：TypeError: '>=' not supported between instances of 'int' and 'pygame.Rect'
 = 拼写错误；
 
+2020年1月23日
+    13 章，外星人代码设置
+
 
 """
