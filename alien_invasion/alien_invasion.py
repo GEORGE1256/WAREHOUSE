@@ -11,7 +11,7 @@ from button import Button
 # 导入其他文件；重命名
 import game_functions as gf
 
-def run_game():
+def run_game(): 
     # 初始化游戏；创建屏幕对象；
     pygame.init()
     # screen = pygame.display.set_mode((1200, 800))
@@ -50,6 +50,7 @@ def run_game():
 
         # 重新绘制屏幕
         gf.update_screen(ai_settings, screen, stats, ship, aliens, bullets, play_button)
+        # 如果放在 if 条件下，界面黑屏，无法显示
             
 
 run_game()

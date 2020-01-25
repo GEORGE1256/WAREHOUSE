@@ -61,7 +61,6 @@ self.rect = pygame.Rect(0, 0, self.width, self.height)
 
 3. 多动手写写“动手试一试”，可以帮助理解代码；一味的抄写代码，难免陷入无聊的境地
 
-
-
+4. 增加游戏难度
 
 """
