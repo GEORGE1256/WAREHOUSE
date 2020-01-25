@@ -46,4 +46,22 @@ self.rect = pygame.Rect(0, 0, self.width, self.height)
 = 和书本核对了两遍，没找到问题；重点核对了主框架，没发现问题
     先放过，下次再检查
 
+2020年1月25日
+1. (延续昨天的问题)= ailen_invasion, 主循环中，如果不添加“if stats.game_active:”，则可以显示飞船，但是PLAY按钮直接出现了，
+    也就是按钮判断生效导致了问题。
+检查了button的运行逻辑，game_active = False时，才显示PLAY;
+初始化状态下，game_active = Flase，且应当显示PLAY；但是没有显示；
+因为显示PLAY的update_screen函数放在了if 判断之内（game_active = True）
+所以PLAY无法显示。
+= 将update_screen 移出if 判断之后，可以正常显示PLAY
+
+2. 如何确定函数的参数？
+    根据函数内部，参数出现的顺序，依次排列参数
+    即使是嵌套函数的参数，也要写入函数中
+
+3. 多动手写写“动手试一试”，可以帮助理解代码；一味的抄写代码，难免陷入无聊的境地
+
+
+
+
 """
