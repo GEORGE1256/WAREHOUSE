@@ -8,10 +8,15 @@ class GameStats():
         
         # 游戏刚启动时，处于非活跃状态
         self.game_active = False
+        # 在任何情况下都不重置的最高分
+        self.high_score = 0
 
     def reset_stats(self):
         
         self.ships_left = self.ai_settings.ship_limit
+        self.score = 0
+        # 每次开始，都重置，不能放在__init__中；每次点击“PLAY", 是
+        # 新游戏，所以分数也要重置；
 
 
 

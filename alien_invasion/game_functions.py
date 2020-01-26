@@ -82,7 +82,7 @@ def start_game(ai_settings, screen, stats, ship, aliens, bullets):
 
         
 
-def update_screen(ai_settings, screen, stats, ship, aliens, bullets, play_button):
+def update_screen(ai_settings, screen, stats, sb, ship, aliens, bullets, play_button):
     # 更新屏幕上的图像，切换到新屏幕
     screen.fill(ai_settings.bg_color)
     # 在飞船和外星人后面，重绘子弹
@@ -90,6 +90,8 @@ def update_screen(ai_settings, screen, stats, ship, aliens, bullets, play_button
         bullet.draw_bullet()
     ship.blitme()
     aliens.draw(screen)
+    # 显示得分
+    sb.show_score()
     # 当游戏处于非活动状态，绘制Play 按钮
     if not stats.game_active:
         play_button.draw_button()
@@ -97,7 +99,7 @@ def update_screen(ai_settings, screen, stats, ship, aliens, bullets, play_button
     # 显示最新的屏幕
     pygame.display.flip()
 
-def update_bullets(ai_settings, screen, ship, aliens, bullets):
+def update_bullets(ai_settings, screen, stats, sb, ship, aliens, bullets):
     # 更新子弹位置
     bullets.update()
     
@@ -108,12 +110,25 @@ def update_bullets(ai_settings, screen, ship, aliens, bullets):
     # print(len(bullets))
 
     # 检查子弹是否击中外星人，如果击中，删除外星人和子弹; P248
-    check_bullet_alien_collisions(ai_settings, screen, ship, aliens, bullets)
+    check_bullet_alien_collisions(ai_settings, screen, stats, sb, ship, aliens, bullets)
 
-def check_bullet_alien_collisions(ai_settings, screen, ship, aliens, bullets):
+def check_bullet_alien_collisions(ai_settings, screen, stats, sb, ship, aliens, bullets):
     # 检查子弹是否击中外星人，如果击中，删除外星人和子弹; P248
     collisions = pygame.sprite.groupcollide(bullets, aliens, True, True)
-    if len(aliens) == 0 :
+
+    if collisions:
+        # 统计分数
+        for aliens in collisions.values():
+            stats.score += ai_settings.alien_points * len(aliens)
+            # 为啥这里统计的是len(aliens)? 什么原理？aliens 是 collisions.values()
+            # 中的aliens, 这样就说的通了。
+            # groupcollide 返回的是字典，为啥不统计字典中元素的数量呢？
+            sb.prep_score()
+        # 查看是否生成新的最高分
+        check_high_score(stats, sb)
+        # 为啥在击中外星人后检查呢？
+
+    if len(aliens) == 0:
         # 当外星人都被消灭之后，清空子弹，并创建新的外星人
         bullets.empty()
         # 每成功击落完后，提高游戏速度
@@ -251,6 +266,8 @@ def update_aliens(ai_settings, stats, screen, ship, aliens, bullets):
     # 检查是否有外星人撞倒屏幕底部
     check_aliens_bottom(ai_settings, stats, screen, ship, aliens, bullets)
 
-
-
-    
+def check_high_score(stats, sb):
+    # 查看是否生成了新的最高分
+    if stats.score > stats.high_score:
+        stats.high_score = stats.score
+        sb.prep_high_score()  

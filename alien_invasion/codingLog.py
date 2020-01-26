@@ -63,4 +63,33 @@ self.rect = pygame.Rect(0, 0, self.width, self.height)
 
 4. 增加游戏难度
 
+2020年1月26日
+
+1. intersect:  相交; 交叉; 横穿; 贯穿; 横断;
+
+2. pygame.sprite.groupcollide()的返回值会有这三种。精灵组无碰撞发生则返回
+空字典（{}的布尔值是Flase）,发生碰撞则返回字典，其中子弹为键，外星人为值。
+每当检测到碰撞发生都会返回一个这样的字典。
+
+举例：
+1 {}; 没有击中
+2 {<Bullet sprite(in 0 groups)>: [<Alien sprite(in 0 groups)>]}；击中一个
+3 {<Bullet sprite(in 0 groups)>: [<Alien sprite(in 0 groups)>, 
+<Alien sprite(in 0 groups)>, <Alien sprite(in 0 groups)>, 
+<Alien sprite(in 0 groups)>, <Alien sprite(in 0 groups)>, 
+<Alien sprite(in 0 groups)>]}；一个子弹击中了多个
+注意格式：键-值，键用的是<>, 值，用的是[]，可以存放多个值；
+
+
+pygame documentation: http://www.pygame.org/docs/ref/sprite.html
+
+不懂的模块，可以找官方文档查看；或者打印模块的返回值；
+
+3.函数round()
+通常让小数精确到小数点后多少位，其中小数位数是由第二个实参指定的。然
+而，如果将第二个实参指定为负数，round()将圆整到最近的10、100、1000等整数倍。
+
+4. ship 耗尽之后，界面依然会显示遗留的外星人、子弹，是否正常？
+
+5. 为啥突然游戏速度变慢了，为啥？
 """
