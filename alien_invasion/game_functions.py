@@ -1,30 +1,62 @@
 import sys
+# sleep 是用来干嘛的？
 from time import sleep
 import pygame
-
 from bullet import Bullet
 from alien import Alien
+
+# 主框架中调用的函数
+def check_events(ai_settings, screen, stats, play_button, sb, ship, aliens, bullets):
+    # 响应按键和鼠标事件
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            # 点击关闭
+            sys.exit()
+        elif event.type == pygame.KEYDOWN:
+            # 按键按下
+            check_keydown_events(event, ai_settings, screen, stats, sb, ship, aliens, bullets)
+        elif event.type == pygame.KEYUP:
+            # 按键松开
+            check_keyup_events(event, ship)
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            # 检查用户是否点击PLAY按钮
+            # 鼠标左击（单击）根据鼠标单击范围确定单击元素
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            # 调用PLAY按钮
+            check_play_button(ai_settings, screen, stats, play_button, sb, ship, aliens,
+                bullets, mouse_x, mouse_y)
 
 def check_keydown_events(event, ai_settings, screen, stats, sb, ship, aliens, bullets):
     # 响应按键
     if event.key == pygame.K_RIGHT:
         ship.moving_right = True
+        # 修改移动标志为True，运行到主框架中的ship.update() 时，会执行向右移动的代码；
+        # 只要一直按着RIGHT，ship.moving_right 一直等于True，ship.update 也会一直运行右移代码
+        # ship 也会一直向右移动
     elif event.key == pygame.K_LEFT:
         ship.moving_left = True
     elif event.key == pygame.K_SPACE:
         # 创建子弹，并将其加入到编组bullets中
         fire_bullet(ai_settings, screen, ship, bullets)
+        # 封装的函数，在本文件中
+        # fire_bullet() 为啥不放入bullet.py中的Bullet类中？
+
+        # 按照SPACE子弹一直发射的实现方法：参考按住右箭头ship一直右移的方法
+        # 设置射击标志，只要射击标志 =True,一直循环执行fire_bullet()代码块
     elif event.key == pygame.K_q:
         sys.exit()
+        # 退出，不是在这里封装的
     elif event.key == pygame.K_p:
-        # 按p，开始游戏， == play
+        # 按p，开始游戏
         start_game(ai_settings, screen, stats, sb, ship, aliens, bullets)
 
 def fire_bullet(ai_settings, screen, ship, bullets):
-    # 如果还没有达到限制，就发射一颗子弹
     # 创建子弹，并将其加入到编组bullets中
+    # 如果还没有达到限制，就发射一颗子弹
     if len(bullets) < ai_settings.bullets_allowed:
+        # 创建bullet 实例
         new_bullet = Bullet(ai_settings, screen, ship)
+        # 加入到bullets编组中
         bullets.add(new_bullet)
 
 def check_keyup_events(event, ship):
@@ -34,39 +66,27 @@ def check_keyup_events(event, ship):
     elif event.key == pygame.K_LEFT:
         ship.moving_left = False
 
-def check_events(ai_settings, screen, stats, play_button, sb, ship, aliens, bullets):
-    # 响应按键和鼠标事件
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            sys.exit()
-        elif event.type == pygame.KEYDOWN:
-            check_keydown_events(event, ai_settings, screen, stats, sb, ship, aliens, bullets)
-        elif event.type == pygame.KEYUP:
-            check_keyup_events(event, ship)
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            # 检查用户是否点击PLAY按钮
-            mouse_x, mouse_y = pygame.mouse.get_pos()
-            # 调用PLAY按钮
-            check_play_button(ai_settings, screen, stats, play_button, sb, ship, aliens,
-                bullets, mouse_x, mouse_y)
-
 def check_play_button(ai_settings, screen, stats, play_button, sb, ship, aliens, 
         bullets, mouse_x, mouse_y):
-    # 检查用户是否点击PLAY按钮
+    # 检查用户是否点击PLAY按钮；
+    
     button_clicked = play_button.rect.collidepoint(mouse_x, mouse_y)
+    # 返回值 True, False；参数是光标点击的位置
+    # play_button 在主框架中定义的是，初始化程序时显示
     if button_clicked and not stats.game_active:
         # 重置游戏设置
         ai_settings.initialize_dynamic_settings()
         # 开始新的游戏
         start_game(ai_settings, screen, stats, sb, ship, aliens, bullets)
-    
 
+# 初始化系统设置
 def start_game(ai_settings, screen, stats, sb, ship, aliens, bullets):
     # 按P重新开始游戏
     # 隐藏光标
     pygame.mouse.set_visible(False)
-    # 重置游戏统计信息
+    # 重置游戏统计信息：本质就是重新执行一遍对应的代码
     stats.reset_stats()
+    # 启动游戏标志
     stats.game_active = True
 
     # 重记记分牌图像；飞船与外星人撞击时调用 sb
@@ -75,22 +95,17 @@ def start_game(ai_settings, screen, stats, sb, ship, aliens, bullets):
     sb.prep_level()
     sb.prep_ships()
 
-    # 清空编组
+    # 清空编组；aliens 是在主框架中创建的编组；
     aliens.empty()
     bullets.empty()
 
     # 重新绘制外星人、飞船
     create_fleet(ai_settings, screen, ship, aliens)
     ship.center_ship()
-
-    """
-    如何确定函数参数？
-    """
-
         
-
+# 更新屏幕上的图像，切换到新屏幕
 def update_screen(ai_settings, screen, stats, sb, ship, aliens, bullets, play_button):
-    # 更新屏幕上的图像，切换到新屏幕
+
     screen.fill(ai_settings.bg_color)
     # 在飞船和外星人后面，重绘子弹
     for bullet in bullets.sprites():
@@ -115,6 +130,22 @@ def update_bullets(ai_settings, screen, stats, sb, ship, aliens, bullets):
         if bullet.rect.bottom <= 0:
             bullets.remove(bullet)
     # print(len(bullets))
+    """
+    为啥遍历的是bullets.copy()? 删除的是bullets.remove()?
+    好像有点感觉了，循环、删除时，是按照bullets中的元素位置执行的：1-5 逐个执行。
+    先处理第一个
+    位置，然后处理第二个位置，依次类推，不管是不是这个元素。如果循环bullets，
+    删除1 后，2 补位到 1 的
+    位置，那2 原来的位置是空，那就不会删除 2 了，最后只会删除1、3、5， 2、4 补
+    位了，所以没删除。
+
+    循环副本时，先删除 bullets 中 的 1 ，2 前移到 1 的位置；因为bullets.copy中 
+    的 1 没有删除，2 不会前移，所以第二次循环 bullets.copy 中的第二个元素：2；
+    之后是循环 第三个元素：3， 依次类推，这样就避免了上面的问题。虽然bullets中
+    的元素被删除了，但是bullets.copy的元素并没有改动，所以会循环到bullets（=
+    bullets.copy）的中的所有元素。
+
+    """
 
     # 检查子弹是否击中外星人，如果击中，删除外星人和子弹; P248
     check_bullet_alien_collisions(ai_settings, screen, stats, sb, ship, aliens, bullets)
@@ -124,11 +155,11 @@ def check_bullet_alien_collisions(ai_settings, screen, stats, sb, ship, aliens, 
     collisions = pygame.sprite.groupcollide(bullets, aliens, True, True)
 
     if collisions:
-        # 统计分数
+        # 统计分数；collisions 返回的是字典，collisions.values(), 返回的是键值中的值。
+        # 检查每个子弹击中的外星人的数量，键值关系：一对多关系
         for aliens in collisions.values():
             stats.score += ai_settings.alien_points * len(aliens)
-            # 为啥这里统计的是len(aliens)? 什么原理？aliens 是 collisions.values()
-            # 中的aliens, 这样就说的通了。
+            # 为啥这里统计的是len(aliens)? 什么原理？aliens 是 collisions.values()中的aliens, 这样就说的通了。
             # groupcollide 返回的是字典，为啥不统计字典中元素的数量呢？
             sb.prep_score()
         # 查看是否生成新的最高分
@@ -195,9 +226,9 @@ def create_alien(ai_settings, screen, aliens, alien_number, row_number):
     aliens.add(alien)
 
 def create_fleet(ai_settings, screen, ship, aliens):
-#     # create aliens
-#     # create one alien, and count the qty of alien in one lien
-#     # the space between alien = alien.width
+    # create aliens
+    # create one alien, and count the qty of alien in one lien
+    # the space between alien = alien.width
     alien = Alien(ai_settings, screen)
     number_aliens_x = get_number_aliens_x(ai_settings, alien.rect.width)
     number_rows = get_number_rows(ai_settings, ship.rect.height, alien.rect.height)

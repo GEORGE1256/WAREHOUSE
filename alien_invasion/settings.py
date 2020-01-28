@@ -57,6 +57,21 @@ class Settings():
         self.alien_points = int(self.alien_points * self.score_scale)
         # print(self.alien_points)；没打击完一次外星人编组之后，分值增加一次
 
+"""
+代码有两种布置方式：
+1. 按照对象布置：如ship 是根据ship 这个对象的操作，放在一起，方便调用和搜索，类似的还有 aliens.py, bullets.py
+
+2. 根据代码功能布置：比如settings，收集的所有的配置项目，好处是可以快速的调整配置，不需要在各个对象文件中寻找
+
+3. 每个文件内部，再根据一定规则分类：比如settings.py文件中，根据设置功能、使用节点、类型分类，将增加速度
+    的设置单独封装（increase_speed()）。
+
+以上两种方法，第一种更常见、普遍，第二种较少。
+
+总之，一切都是为了更好的理解、调整。
+
+"""
+
 
 
 
