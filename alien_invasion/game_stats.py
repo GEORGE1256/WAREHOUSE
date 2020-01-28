@@ -17,6 +17,7 @@ class GameStats():
         self.score = 0
         # 每次开始，都重置，不能放在__init__中；每次点击“PLAY", 是
         # 新游戏，所以分数也要重置；
+        self.level = 1
 
 
 

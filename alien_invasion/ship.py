@@ -1,9 +1,14 @@
 import pygame
+from pygame.sprite import Sprite
+# 因为要显示剩余的ship数量，所以需要调用Sprite
 
-class Ship():
+class Ship(Sprite):
+    # 使用sprite时，类中要传入sprite 参数
 
     def __init__(self, ai_settings, screen):
         # 初始化飞船；设置飞船初始位置
+        super(Ship, self).__init__()
+        # Sprite
         self.screen = screen
         self.ai_settings = ai_settings
 
@@ -44,3 +49,9 @@ class Ship():
     def center_ship(self):
         # 飞船居中
         self.center = self.screen_rect.centerx
+
+
+
+        """
+        # 使用sprite时，类中要传入sprite 参数
+        """
